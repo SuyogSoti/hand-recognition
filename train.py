@@ -1,6 +1,7 @@
 from PIL import Image
 import numpy as np
 import os
+import klepto
 
 
 def main():
@@ -12,14 +13,14 @@ def main():
         for pic in pictures:
             img = Image.open("./dataset/"+i+"/"+pic)
             img = img.convert("L")
-            img = img.load(scale=0.25)
             img = np.asarray(img, dtype=np.uint8).reshape(1, -1)[0]
-            print(len(img))
             x_point.append(img)
             y_point.append(i)
         print(i)
-    print(len(x_point))
-    print(len(y_point))
+    d = klepto.archives.dir_archive('data', cached=True, serialized=True)
+    d[0] = x_point
+    d[1] = y_point
+    d.dump()
 
 # im = Image.open("test.png")
 # im.save("test-600.png", dpi=(600,600))
