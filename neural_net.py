@@ -1,5 +1,9 @@
-import klepto
+from sklearn.neural_network import MLPClassifier
 
-d = klepto.archives.dir_archive('data', cached=True, serialized=True)
-for k, v in d.iteritems():
-    print(k)
+
+def main():
+    ml = MLPClassifier()
+
+
+if __name__ == '__main__':
+    main()

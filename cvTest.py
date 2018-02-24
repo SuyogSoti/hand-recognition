@@ -3,7 +3,7 @@
 import numpy as np
 import cv2
 
-x1, x2, y1, y2 = 100, 100 300 300
+x1, x2, y1, y2 = 100, 100, 300, 300
 
 cap = cv2.VideoCapture(0)
 
@@ -18,7 +18,7 @@ while(True):
     subIm = image[y1:y2, x1:x2]
 
     #display the result
-    cv2.imshow('frame',gray)
+    cv2.imshow('frame',image)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 

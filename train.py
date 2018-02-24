@@ -1,7 +1,7 @@
 from PIL import Image
 import numpy as np
 import os
-import klepto
+import dbm
 
 
 def main():
@@ -17,10 +17,11 @@ def main():
             x_point.append(img)
             y_point.append(i)
         print(i)
-    d = klepto.archives.dir_archive('data', cached=True, serialized=True)
-    d[0] = x_point
-    d[1] = y_point
-    d.dump()
+    db = dbm.open('cache', 'c')
+    db['x'] = np.asarray(x_point)
+    db['y'] = np.asarray(y_point)
+    db.close()
+
 
 # im = Image.open("test.png")
 # im.save("test-600.png", dpi=(600,600))
