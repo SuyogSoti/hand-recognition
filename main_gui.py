@@ -67,7 +67,6 @@ class mainWidget(QWidget):
 
         # This function should add one paragraph at a time to the document including a delete character
 
-<<<<<<< HEAD
     #This function takes in a string and has espeak say it
     def say(self,n):
         if comp:
@@ -78,8 +77,6 @@ class mainWidget(QWidget):
         
 
     # This function interprets the subImage in order to determine the letter it represents
-=======
->>>>>>> 63730822641b298a13394ba4f6a15844c9adea5a
     def imageToLetter(self, image):
         return "a"
 
@@ -124,7 +121,7 @@ class mainWidget(QWidget):
                 # Interpret the subImage
                 newLetter = self.imageToLetter(subIm)
                 # Speak the new letter and store it in our current letters array
-                self.say(newLetter)
+                # self.say(newLetter)
                 self.letter += newLetter
 
         # kill the recording
