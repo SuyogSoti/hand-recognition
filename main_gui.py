@@ -11,6 +11,15 @@ import queue
 import os
 from docx import Document
 from docx.shared import Inches
+import pickle
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from sklearn import tree
+import numpy as np
+from sklearn.externals import joblib
+import train
+from skimage.measure import structural_similarity as compare_mse
+from PIL import Image
 
 if platform == "win32":
     import win32com.client as wincl
@@ -19,6 +28,7 @@ if platform == "win32":
     comp = 0
 else:
     comp = 1
+
 
 ##############################
 class mainWindow(QMainWindow):
@@ -30,9 +40,9 @@ class mainWindow(QMainWindow):
         #self.noods = QWidget(webcam)
         self.woohoo = mainWidget()
 
+
 ##########################
 class mainWidget(QWidget):
-
 
     # function for the controlling GUI
     def __init__(self):
@@ -54,7 +64,6 @@ class mainWidget(QWidget):
 
         self.file_name = QLineEdit()
 
-
         hLayout1.addWidget(start)
         hLayout1.addWidget(stop)
         hLayout1.addWidget(write)
@@ -64,21 +73,24 @@ class mainWidget(QWidget):
         self.setLayout(hLayout1)
         self.show()
         self.doc = Document()
+        arr = pickle.load(open("data.sav", 'rb'))
+        x = arr[0]
+        y = arr[1]
+        self.xt = arr[2]
+        self.yt = arr[3]
+        # self.clf = tree.DecisionTreeClassifier()
+        # self.clf = self.clf.fit(x, y)
+        self.clf = joblib.load("finalized_model.sav")
 
         # This function should add one paragraph at a time to the document including a delete character
 
     #This function takes in a string and has espeak say it
-    def say(self,n):
+    def say(self, n):
         if comp:
-            os.system("espeak '"+n+"'")
+            os.system("espeak '" + n + "'")
             print(chr(27) + "[2J")
         else:
             voice.Speak(n)
-        
-
-    # This function interprets the subImage in order to determine the letter it represents
-    def imageToLetter(self, image):
-        return "a"
 
     # Start the video recording here
     def startAction(self):
@@ -105,7 +117,8 @@ class mainWidget(QWidget):
             # Draw the subImage rectangle
             image = cv2.rectangle(image, (x1, y1), (x2, y2), (255, 200, 0), 3)
             # Draw the newLetter
-            cv2.putText(image, newLetter.upper(), (490,195), cv2.FONT_HERSHEY_SIMPLEX, 3, (255,200,0), 5)
+            cv2.putText(image, newLetter.upper(), (490, 195),
+                        cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 200, 0), 5)
             # Display the frame
             cv2.imshow('frame', image)
 
@@ -116,27 +129,45 @@ class mainWidget(QWidget):
             # Increment our frame counter
             frameNumber = frameNumber + 1
 
-            # Every thirty frames 
+            # Every thirty frames
             if frameNumber == 30:
                 frameNumber = 0
                 # Create the subimage
                 subIm = image[y1:y2, x1:x2]
-                # Interpret the subImage
-                newLetter = self.imageToLetter(subIm)
-                # Plot the new letter and store it in our current letters array
-                # self.say(newLetter)
+                subIm = cv2.flip(subIm, 1)
 
-                self.letter += newLetter
+                img = Image.fromarray(subIm)
+                # self.letter += self.imageToLetter(subIm)
+                img = img.convert("L")
+                basewidth = 50
+                wpercent = (basewidth / float(img.size[0]))
+                hsize = int((float(img.size[1]) * float(wpercent)))
+                img = img.resize((basewidth, hsize), Image.ANTIALIAS)
+                img = np.asarray(img, dtype=np.uint8).reshape(1, -1)
+                # new = self.xt[0]
+                # tot = ssim(self.xt[0].reshape(50, 50), img[0].reshape(50, 50))
+                # for i in self.xt:
+                #     # err = np.linalg.norm(i - img)
+                #     s = ssim(i.reshape(50, 50), img[0].reshape(50, 50))
+                #     if s > tot:
+                #         tot = s
+                #         new = i
+                err = np.argmin([compare_mse(img[0], i) for i in self.xt])
+                new = self.xt[err]
+                test = self.clf.predict(new.reshape(1, -1))
+                print(err)
+                # test = self.clf.predict(img)
+                for i in test:
+                    # print(chr(np.argmax(i) + ord('A')))
+                    newLetter = i
+                    self.letter += i
 
         # kill the recording
         cv2.destroyAllWindows()
 
-
     # function to stop the recording
     def stopAction(self):
         self.play = False
-
-
 
     # function to write the words to a file with the specified file name
     def writeAction(self):
@@ -157,10 +188,5 @@ def main():
 
 
 ###########################
-if(__name__ == "__main__"):
+if (__name__ == "__main__"):
     main()
-
-
-
-
-
