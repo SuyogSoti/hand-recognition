@@ -82,6 +82,8 @@ class mainWidget(QWidget):
 
     # Start the video recording here
     def startAction(self):
+        newLetter = " "
+
         # set a flag
         self.play = True
 
@@ -102,7 +104,8 @@ class mainWidget(QWidget):
             image = cv2.flip(image, 1)
             # Draw the subImage rectangle
             image = cv2.rectangle(image, (x1, y1), (x2, y2), (255, 200, 0), 3)
-
+            # Draw the newLetter
+            cv2.putText(image, newLetter.upper(), (490,195), cv2.FONT_HERSHEY_SIMPLEX, 3, (255,200,0), 5)
             # Display the frame
             cv2.imshow('frame', image)
 
@@ -120,8 +123,9 @@ class mainWidget(QWidget):
                 subIm = image[y1:y2, x1:x2]
                 # Interpret the subImage
                 newLetter = self.imageToLetter(subIm)
-                # Speak the new letter and store it in our current letters array
+                # Plot the new letter and store it in our current letters array
                 # self.say(newLetter)
+
                 self.letter += newLetter
 
         # kill the recording
