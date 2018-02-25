@@ -8,4 +8,4 @@ def say(n):
     os.system("espeak '"+n+"'")
     print(chr(27) + "[2J")
 
-say("Hello world jpeI am super cool")
+say("This is a test phrase")

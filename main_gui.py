@@ -2,16 +2,23 @@
 
 # import the needed libraries
 import sys
+from sys import platform
 import cv2
-import pyautogui
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import queue
-
+import os
 from docx import Document
 from docx.shared import Inches
 
+if platform == "win32":
+    import win32com.client as wincl
+    voice = wincl.Dispatch("SAPI.SpVoice")
+
+    comp = 0
+else:
+    comp = 1
 
 ##############################
 class mainWindow(QMainWindow):
@@ -60,8 +67,16 @@ class mainWidget(QWidget):
 
         # This function should add one paragraph at a time to the document including a delete character
 
+    #This function takes in a string and has espeak say it
+    def say(self,n):
+        if comp:
+            os.system("espeak '"+n+"'")
+            print(chr(27) + "[2J")
+        else:
+            voice.Speak(n)
+        
 
-
+    # This function interprets the subImage in order to determine the letter it represents
     def imageToLetter(self, image):
         return "a"
 
@@ -74,28 +89,40 @@ class mainWidget(QWidget):
 
         cap = cv2.VideoCapture(0)
 
+        # Set the boundaries of the video
         cap.set(3, 800)
         cap.set(4, 600)
+
+        # Frame counter, creates our one per second count
         frameNumber = 0
+
         while (self.play):
-            # capture frame-by-frame
+            # capture frame and flip it
             ret, image = cap.read()
             image = cv2.flip(image, 1)
-            # Operate on the frame
-            # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            # Draw the subImage rectangle
             image = cv2.rectangle(image, (x1, y1), (x2, y2), (255, 200, 0), 3)
-            subIm = image[y1:y2, x1:x2]
 
-            # display the result
+            # Display the frame
             cv2.imshow('frame', image)
+
+            # If a q is pressed break from the loop
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
+            # Increment our frame counter
             frameNumber = frameNumber + 1
 
+            # Every thirty frames 
             if frameNumber == 30:
                 frameNumber = 0
-                self.letter += self.imageToLetter(subIm)
+                # Create the subimage
+                subIm = image[y1:y2, x1:x2]
+                # Interpret the subImage
+                newLetter = self.imageToLetter(subIm)
+                # Speak the new letter and store it in our current letters array
+                self.say(newLetter)
+                self.letter += newLetter
 
         # kill the recording
         cv2.destroyAllWindows()
