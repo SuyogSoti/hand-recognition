@@ -3,7 +3,6 @@
 # import the needed libraries
 import sys
 import cv2
-import pyautogui
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -59,8 +58,6 @@ class mainWidget(QWidget):
         self.doc = Document()
 
         # This function should add one paragraph at a time to the document including a delete character
-
-
 
     def imageToLetter(self, image):
         return "a"

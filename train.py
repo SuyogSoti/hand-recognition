@@ -1,8 +1,9 @@
 from PIL import Image
 import numpy as np
-from sklearn.neural_network import MLPClassifier
+# import tensorflow as tf
 import os
 import pickle
+from sklearn import tree
 
 
 def main():
@@ -12,18 +13,16 @@ def main():
     test_x = []
     test_y = []
     for i in folders:
-        pictures = os.listdir("./dataset/"+i)
+        pictures = os.listdir("./dataset/" + i)
         count = 0
         for pic in pictures:
-            img = Image.open("./dataset/"+i+"/"+pic)
+            img = Image.open("./dataset/" + i + "/" + pic)
             img = img.convert("L")
-            basewidth = 50
-            wpercent = (basewidth/float(img.size[0]))
-            hsize = int((float(img.size[1])*float(wpercent)))
-            img = img.resize((basewidth,hsize), Image.ANTIALIAS)
-            # img = img.resize(50, 50)
+            basewidth = 20
+            wpercent = (basewidth / float(img.size[0]))
+            hsize = int((float(img.size[1]) * float(wpercent)))
+            img = img.resize((basewidth, hsize), Image.ANTIALIAS)
             img = np.asarray(img, dtype=np.uint8).reshape(1, -1)[0]
-            img = img//256
             if count:
                 x_point.append(img)
                 y_point.append(i)
@@ -33,24 +32,37 @@ def main():
             count = 1
         print(i)
     filename = 'data.sav'
-    pickle.dump([np.asarray(x_point), np.asarray(y_point), np.asarray(test_x), np.asarray(test_y)], open(filename, 'wb'))
-    return [np.asarray(x_point), np.asarray(y_point), np.asarray(test_x), np.asarray(test_y)]
+    pickle.dump([
+        np.asarray(x_point),
+        np.asarray(y_point),
+        np.asarray(test_x),
+        np.asarray(test_y)
+    ], open(filename, 'wb'))
+    return [
+        np.asarray(x_point),
+        np.asarray(y_point),
+        np.asarray(test_x),
+        np.asarray(test_y)
+    ]
 
 
 # im = Image.open("test.png")
 # im.save("test-600.png", dpi=(600,600))
 if __name__ == '__main__':
-    redo = True
-    x = None
-    # arr = pickle.load(open("data.sav", 'rb'))
-    # x = arr[0]
-    # y = arr[1]
-    # xt = arr[2]
-    # yt = arr[3]
+    redo = False
+    arr = pickle.load(open("data.sav", 'rb'))
+    x = arr[0]
+    y = arr[1]
+    xt = arr[2]
+    yt = arr[3]
     if x is None or redo:
         x, y, xt, yt = main()
-    import pdb; pdb.set_trace()
-    ml = MLPClassifier(activation="logistic", max_iter=1000, verbose=True, hidden_layer_sizes=(500, 2))
-    ml.fit(x, y)
-    print(ml.score(xt, yt))
-
+    # import pdb; pdb.set_trace()
+    clf = tree.DecisionTreeClassifier()
+    clf = clf.fit(x, y)
+    test = clf.predict_proba(xt)
+    folders = os.listdir("./dataset")
+    count = 0
+    for i in test:
+        print(chr(np.argmax(i) + ord('A')), folders[count])
+        count += 1
