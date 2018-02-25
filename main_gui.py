@@ -77,6 +77,7 @@ class mainWidget(QWidget):
         
 
     # This function interprets the subImage in order to determine the letter it represents
+>>>>>>> 63730822641b298a13394ba4f6a15844c9adea5a
     def imageToLetter(self, image):
         return "a"
 
