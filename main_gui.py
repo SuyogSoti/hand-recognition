@@ -152,11 +152,14 @@ class mainWidget(QWidget):
                 #     if s > tot:
                 #         tot = s
                 #         new = i
-                err = np.argmin([compare_mse(img[0], i) for i in self.xt])
-                new = self.xt[err]
-                test = self.clf.predict(new.reshape(1, -1))
-                print(err)
-                # test = self.clf.predict(img)
+
+
+                # TODO: images suck
+                # err = np.argmin([compare_mse(img[0], i) for i in self.xt])
+                # new = self.xt[err]
+                # test = self.clf.predict(new.reshape(1, -1))
+                # print(err)
+                test = self.clf.predict(img)
                 for i in test:
                     # print(chr(np.argmax(i) + ord('A')))
                     newLetter = i
@@ -174,6 +177,7 @@ class mainWidget(QWidget):
         name = self.file_name.displayText()
         self.doc.add_paragraph(self.letter)
         self.doc.save(name)
+        self.say(self.letter)
 
 
 ###########
