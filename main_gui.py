@@ -18,7 +18,7 @@ from sklearn import tree
 import numpy as np
 from sklearn.externals import joblib
 import train
-from skimage.measure import structural_similarity as compare_mse
+# from skimage.measure import structural_similarity as compare_mse
 from PIL import Image
 
 if platform == "win32":
@@ -73,11 +73,11 @@ class mainWidget(QWidget):
         self.setLayout(hLayout1)
         self.show()
         self.doc = Document()
-        arr = pickle.load(open("data.sav", 'rb'))
-        x = arr[0]
-        y = arr[1]
-        self.xt = arr[2]
-        self.yt = arr[3]
+        # arr = pickle.load(open("data.sav", 'rb'))
+        # x = arr[0]
+        # y = arr[1]
+        # self.xt = arr[2]
+        # self.yt = arr[3]
         # self.clf = tree.DecisionTreeClassifier()
         # self.clf = self.clf.fit(x, y)
         self.clf = joblib.load("finalized_model.sav")

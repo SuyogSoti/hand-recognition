@@ -6,8 +6,8 @@ import pickle
 from sklearn import tree
 from skimage.measure import structural_similarity as ssim
 from sklearn.externals import joblib
-from sklearn.cross_validation import cross_val_score
-from sklearn import grid_search
+# from sklearn.cross_validation import cross_val_score
+# from sklearn import grid_search
 
 
 def main():
@@ -62,14 +62,14 @@ if __name__ == '__main__':
     # # if x is None or redo:
     # # x, y, xt, yt = main()
     # # import pdb; pdb.set_trace()
-    # clf = tree.DecisionTreeClassifier(max_features="auto", max_depth=100)
-    # clf = clf.fit(x, y)
-    # filename = 'finalized_model.sav'
-    # joblib.dump(clf, filename)
-    # test = clf.predict(xt)
+    clf = tree.DecisionTreeClassifier(max_features="auto", max_depth=100)
+    clf = clf.fit(x, y)
+    filename = 'finalized_model.sav'
+    joblib.dump(clf, filename)
+    test = clf.predict(xt)
     # folders = os.listdir("./dataset")
-    # for i in test:
-    #     print(i)
+    for i in test:
+        print(i)
 
     """
     depth = []
@@ -80,9 +80,9 @@ if __name__ == '__main__':
         depth.append((i,scores.mean()))
         print(scores)
     print(depth)
-    """
     parameters = {'max_depth':range(3,20)}
     clf = grid_search.GridSearchCV(tree.DecisionTreeClassifier(), parameters, n_jobs=4)
     clf.fit(X=x, y=y)
     tree_model = clf.best_estimator_
     print (clf.best_score_, clf.best_params_) 
+    """
